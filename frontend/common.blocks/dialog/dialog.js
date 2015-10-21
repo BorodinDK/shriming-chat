@@ -12,6 +12,9 @@ modules.define(
             onSetMod : {
                 'js' : {
                     'inited' : function(){
+
+                        _this = this;
+
                         this._textarea = this.findBlockInside('textarea');
                         this._container = this.elem('container');
 
@@ -21,6 +24,14 @@ modules.define(
                         this._textarea.bindTo('keydown', this._onConsoleKeyDown.bind(this));
                         this.bindTo('history', 'wheel DOMMouseScroll mousewheel', this._onHistoryScroll.bind(this));
                         this._subscribeMessageUpdate();
+
+                        chatAPI.on('user_typing', function(data){
+                            if(data.channel == _this._channelId){
+                                console.log('TYPING');
+                                _this.setMod(_this.elem('typing'), 'visible');
+                            }
+                        });
+
                     }
                 }
             },
@@ -193,13 +204,11 @@ modules.define(
                     channel : _this._channelId,
                     username : _this.params.username,
                     as_user : true
-                })
-                    .then(function(){
-                        _this.elem('blank').hide();
-                    })
-                    .catch(function(){
-                        Notify.error('Ошибка при отправке сообщения!');
-                    });
+                }).then(function(){
+                    _this.elem('blank').hide();
+                }).catch(function(){
+                    Notify.error('Ошибка при отправке сообщения!');
+                });
             }
         }));
     }

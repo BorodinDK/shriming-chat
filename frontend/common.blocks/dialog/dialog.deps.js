@@ -14,6 +14,7 @@
         { block : 'notify' },
         { block : 'events', elems : 'channels' },
         { block : 'editable-title', mods : { active : true, empty : true } },
-        { block : 'functions', elem : 'debounce' }
+        { block : 'functions', elem : 'debounce' },
+        { block : 'dialog', elems: 'typing', mods: { visible : true } }
     ]
 });
