@@ -57,6 +57,10 @@ module.exports.routes = {
     'get  /slack/:method' : 'SlackController.api',
     'post /slack/:method' : 'SlackController.api',
 
+    // getToken
+    'get  /getToken' : 'Token.get',
+    'post /getToken' : 'Token.get',
+
     // WebRtc
     'post /webrtc/message' : 'WebrtcController.message',
 
