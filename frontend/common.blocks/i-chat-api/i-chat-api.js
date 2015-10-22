@@ -22,6 +22,15 @@ modules.define('i-chat-api', ['i-chat-api__web', 'jquery', 'vow', 'eventemitter2
             get : webAPI.get,
 
             /**
+             * Совершает XMLHttpRequest POST-запрос напрямую к серверу Slack
+             *
+             * @param {Object} params Передаваемые данные
+             * @callback {Object}
+             */
+
+            file : webAPI.file,
+
+            /**
              * Совершает POST-запрос к серверу Slack
              * ! API Slack позволяет использовать GET-запросы для
              * совершения любых операций.

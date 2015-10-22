@@ -24,6 +24,21 @@ modules.define('i-chat-api__web', ['socket-io', 'jquery', 'vow'],
              */
             post : function(action, params){
                 return connect(action, params, 'post');
+            },
+
+            file : function(params, callback){
+                io.socket.get('/getToken', function(data){
+                    var formData = new FormData();
+                    params['token'] = data.token;
+                    for(var k in params) formData.append(k, params[k]);
+                    var xhr = new XMLHttpRequest();
+                    xhr.open("POST", "https://slack.com/api/files.upload");
+                    xhr.addEventListener('load', function(event){
+                        callback(this.response);
+                    });
+                    xhr.send(formData);
+                });
+                return false;
             }
         };
 
