@@ -1,10 +1,10 @@
 ({
     shouldDeps : [
-    	{ elem : 'type' },
-    	{ elem : 'size' },
+        { elem : 'type' },
+        { elem : 'size' },
         { elem : 'image' },
-    	{ elem : 'name' },
-    	{ elem : 'data' },
+        { elem : 'name' },
+        { elem : 'data' },
         { block: 'image' }
     ]
 });
