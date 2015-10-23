@@ -1,0 +1,27 @@
+block('file')(
+    js()(true),
+    content()(function(){
+        var params = this.ctx.params || {};
+        return applyCtx([
+            {
+                elem : 'image',
+                mods : { 'type' : params.type },
+                content : {
+                    elem : 'type',
+                    content : '.'+params.type
+                }
+            },{
+                elem : 'data',
+                content : [
+                    {
+                        elem : 'name',
+                        content : params.name
+                    },{
+                        elem : 'size',
+                        content : params.size
+                    }
+                ]            
+            }
+        ]);
+    })
+);

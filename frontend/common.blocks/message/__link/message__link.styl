@@ -1,0 +1,49 @@
+.message__link
+    position relative
+    color $gray_text_color
+    text-decoration none
+    margin 4px 0
+    display block
+
+.message__link_image
+    border 1px solid $border_color
+    display inline-block
+    overflow hidden
+    border-radius 4px
+    &:before
+        position absolute
+        left 0
+        right 0
+        top 0
+        bottom 0
+        margin auto
+        content ''
+        display inline-block
+        height 80px
+        width 80px
+        border-radius 40px
+        background rgba(0, 0, 0, .7) no-repeat center
+        background-image url('file_download.svg')
+        background-size 50%
+        transform scale(.5)
+        transition all.3s cubic-bezier(0.28, 0.64, 0.56, 1.62)
+        opacity 0
+        
+
+    &:after
+        content ''
+        position absolute
+        top 0
+        background #808080
+        display block
+        height 100%
+        width 100%
+        opacity 0
+        transition all.3s ease
+
+.message__link_image:hover
+    &:before
+        transform scale(1)
+        opacity 1
+    &:after
+        opacity .3

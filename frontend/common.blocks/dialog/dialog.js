@@ -12,8 +12,27 @@ modules.define(
             onSetMod : {
                 'js' : {
                     'inited' : function(){
+
                         this._textarea = this.findBlockInside('textarea');
                         this._container = this.elem('container');
+                        this._page = this.findBlockOutside('page');
+
+                        _this = this;
+
+                        this._page.domElem[0].ondragover = function(){
+                            console.log('hover');
+                            return false;
+                        };
+                        this._page.domElem[0].ondragleave = function(){
+                            console.log('leave');
+                            return false;
+                        };
+
+                        this._page.domElem[0].ondrop = function(e){
+                            console.log('drop');
+                            _this._sendFiles(event.dataTransfer.files);
+                            return false;
+                        };
 
                         List.on('click-channels click-users', this._onChannelSelect, this);
                         User.on('click', this._onUserClick, this);
@@ -21,6 +40,14 @@ modules.define(
                         this._textarea.bindTo('keydown', this._onConsoleKeyDown.bind(this));
                         this.bindTo('history', 'wheel DOMMouseScroll mousewheel', this._onHistoryScroll.bind(this));
                         this._subscribeMessageUpdate();
+
+                        chatAPI.on('user_typing', function(data){
+                            if(data.channel == _this._channelId){
+                                console.log('TYPING');
+                                _this.setMod(_this.elem('typing'), 'visible');
+                            }
+                        });
+
                     }
                 }
             },
@@ -35,6 +62,7 @@ modules.define(
                 var generatedMessage;
 
                 chatAPI.on('message', function(data){
+                    console.log(data);
                     if(_this._channelId && data.channel === _this._channelId){
                         generatedMessage = _this._generateMessage(data);
                         BEMDOM.append(_this._container, generatedMessage);
@@ -193,13 +221,29 @@ modules.define(
                     channel : _this._channelId,
                     username : _this.params.username,
                     as_user : true
-                })
-                    .then(function(){
-                        _this.elem('blank').hide();
-                    })
-                    .catch(function(){
-                        Notify.error('Ошибка при отправке сообщения!');
+                }).then(function(){
+                    _this.elem('blank').hide();
+                }).catch(function(){
+                    Notify.error('Ошибка при отправке сообщения!');
+                });
+            },
+            _sendFiles : function(files){
+                var _this = this;
+
+                if(!this._channelId) {
+                    return;
+                }
+                console.log(files);
+                for(var i = 0; i < files.length; i++){
+                    chatAPI.file({
+                        filename : files[i].name,
+                        type : files[i].type,
+                        file : files[i],
+                        channels : _this._channelId,
+                    },function(result){
+                        console.log(result);
                     });
+                }
             }
         }));
     }
