@@ -1,0 +1,32 @@
+$file_corner = 25
+
+.file__image
+    position relative
+    display block
+    height 100px
+    width 80px
+    background #CCC
+    overflow hidden
+    border-radius 4px
+    &:before, &:after
+        content ''
+        position absolute
+        top 0
+        right 0
+        display block
+        height $file_corner px
+        width @height
+        background rgba(255, 255, 255, .4)
+        border-bottom-left-radius 3px
+    &:after
+        background #fff
+        transform rotate(45deg)
+        width $file_corner*math(2, 'sqrt')px
+        height @width
+        top -(@width/2)px
+        right @top
+
+.file__image_type_psd
+    background #051678
+.file__image_type_gdoc
+    background #4285f4
