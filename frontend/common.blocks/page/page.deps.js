@@ -13,6 +13,7 @@
         { block : 'video' },
         { block : 'list', elems: ['addition'] },
         { block : 'dialog' },
+        { block : 'drop-zone' },
         { block : 'link' }
     ]
 });

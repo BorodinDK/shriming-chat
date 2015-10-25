@@ -16,20 +16,26 @@ modules.define(
                         this._textarea = this.findBlockInside('textarea');
                         this._container = this.elem('container');
                         this._page = this.findBlockOutside('page');
+                        this._dropZone = this._page.findBlocksInside('drop-zone')[0];
 
-                        _this = this;
+                        var _this = this;
+                        var timeout;
 
-                        this._page.domElem[0].ondragover = function(){
-                            console.log('hover');
+                        document.body.ondragover = function(e){
+                            e.preventDefault();
+                            clearTimeout(timeout);
+                            _this._dropZone.setMod('visible', true);
                             return false;
                         };
-                        this._page.domElem[0].ondragleave = function(){
-                            console.log('leave');
+                        document.body.addEventListener('dragleave',function(e){
+                            e.preventDefault();
+                            timeout = setTimeout(function(){
+                                _this._dropZone.setMod('visible', false);
+                            }, 300);
                             return false;
-                        };
+                        }, false);
 
-                        this._page.domElem[0].ondrop = function(e){
-                            console.log('drop');
+                        document.body.ondrop = function(e){
                             _this._sendFiles(event.dataTransfer.files);
                             return false;
                         };
@@ -62,7 +68,6 @@ modules.define(
                 var generatedMessage;
 
                 chatAPI.on('message', function(data){
-                    console.log(data);
                     if(_this._channelId && data.channel === _this._channelId){
                         generatedMessage = _this._generateMessage(data);
                         BEMDOM.append(_this._container, generatedMessage);
@@ -229,20 +234,26 @@ modules.define(
             },
             _sendFiles : function(files){
                 var _this = this;
+                _this._progress = this.findBlocksOutside('page')[0].findBlocksInside('drop-zone')[0].findElem('progress')[0];
 
                 if(!this._channelId) {
                     return;
                 }
-                console.log(files);
                 for(var i = 0; i < files.length; i++){
                     chatAPI.file({
                         filename : files[i].name,
                         type : files[i].type,
                         file : files[i],
                         channels : _this._channelId,
-                    },function(result){
-                        console.log(result);
-                    });
+                    },function(e){
+                        this._progress.style.height = e+'%';
+                        this._dropZone.setMod('upload', true);
+                    }.bind(this),
+                    function(result){
+                        this._dropZone.setMod('visible', false);
+                        _this._dropZone.setMod('upload', false);
+                        _this._progress.style.height = 0;
+                    }.bind(this));
                 }
             }
         }));
