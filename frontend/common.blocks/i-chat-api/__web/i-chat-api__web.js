@@ -26,13 +26,20 @@ modules.define('i-chat-api__web', ['socket-io', 'jquery', 'vow'],
                 return connect(action, params, 'post');
             },
 
-            file : function(params, callback){
+            file : function(params, progress, callback){
                 io.socket.get('/getToken', function(data){
                     var formData = new FormData();
                     params['token'] = data.token;
                     for(var k in params) formData.append(k, params[k]);
                     var xhr = new XMLHttpRequest();
+
                     xhr.open("POST", "https://slack.com/api/files.upload");
+
+                    xhr.upload.addEventListener('progress', function(event){
+                        progress((event.loaded/event.total*100).toFixed(1));
+                        // console.log( 'Загружено на сервер ' + event.loaded + ' байт из ' + event.total +', ' + (event.loaded/event.total*100).toFixed(1) + '%' );
+                    });
+
                     xhr.addEventListener('load', function(event){
                         callback(this.response);
                     });

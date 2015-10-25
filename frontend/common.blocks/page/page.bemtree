@@ -97,6 +97,8 @@ match(this.ctx.data)
                             ]
                         }
                     ]
+                },{
+                    block : 'drop-zone'
                 }
             ];
         } else {

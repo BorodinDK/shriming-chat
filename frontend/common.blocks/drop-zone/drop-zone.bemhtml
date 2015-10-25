@@ -1,0 +1,21 @@
+block('drop-zone')(
+    js()(true),
+    content()(function(){
+        //var params = this.ctx.params || {};
+        return applyCtx([
+            {
+                elem : 'circle',
+                content : [
+                    {
+                        elem : 'file'
+                    },{
+                        elem : 'title',
+                        content : 'Кинь файл сюда'
+                    },{
+                        elem : 'progress',
+                    }
+                ]
+            }
+        ]);
+    })
+);
