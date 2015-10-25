@@ -104,13 +104,6 @@ modules.define(
                 chatAPI.get('channels.list')
                     .then(function(data){
                         var channelsList = data.channels.map(function(channel, index){
-                            if(channel.is_general) {
-                                generalChannelIndex = index;
-                            }
-
-                            if(channel.name == location.hash.slice(1)) {
-                                generalChannelIndex = index;
-                            }
 
                             return BEMHTML.apply({
                                 block : 'list',
@@ -128,17 +121,13 @@ modules.define(
                         BEMDOM.update(_this._container, channelsList);
 
                         items = _this._container.children();
-                        selectedChannel = items[hashChannelIndex || generalChannelIndex];
-
-                        if(selectedChannel) {
-                            selectedChannel.click();
-                        }
                     })
                     .catch(function(){
                         Notify.error('Ошибка получения списка каналов!');
                     })
                     .always(function(){
                         _this._spinBlock.delMod('visible');
+                        _this_onChangeItem();
                     });
             },
 
@@ -192,6 +181,7 @@ modules.define(
                     })
                     .always(function(){
                         _this._spinBlock.delMod('visible');
+                        _this._onChangeItem();
                     });
 
                 function updateUsersStatus(name, data){
@@ -290,19 +280,58 @@ modules.define(
 
                 if(type == 'channels'){
                     location.hash = e.target.innerText;
+                } else if (type == 'users'){
+                    location.hash = '@'+e.target.parentNode.getElementsByClassName('user__nick')[0].innerText;
                 }
 
                 if(counter) {
                     counter.text('');
                 }
 
-                this.__self.instances.forEach(function(list){
-                    list.delMod(list.elem('item'), 'current');
-                });
-
-                this.setMod(item, 'current', true);
-                this.emit('click-' + type, this.elemParams(item));
                 this.dropElemCache('item');
+            },
+
+            _onChangeItem : function(){
+                _this = this;
+
+                this._changeItem();
+
+                window.addEventListener("hashchange", function(){
+                    _this._changeItem();
+                }, false);
+
+            },
+
+            _changeItem : function(){
+                _this = this;
+
+                var hash  = location.hash;
+                var type = 'channels';
+                var n;
+                if(/@/.test(location.hash)){
+                    hash = hash.slice(2);
+                    type = 'users';
+                    n = 1;
+                }else{
+                    hash = hash.slice(1);
+                    type = 'channels';
+                    n = 0;
+                }
+
+                var node = this.__self.instances[n];
+                var items = node.findElem('item');
+
+                for(var i = 0; i<items.length; i++){
+                    var item = this.elemParams([items[i]]);
+                    if(item.name == hash){
+                        this.emit('click-' + type, item);
+                        this.__self.instances.forEach(function(list){
+                            list.delMod(list.elem('item'), 'current');
+                        });
+                        node.setMod($(items[i]), 'current', true);
+                    }
+                }
+
             },
 
             _onChannelChangeTitle : function(e, data){
