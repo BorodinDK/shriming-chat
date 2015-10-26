@@ -1,10 +1,9 @@
 modules.define('message', ['i-bem__dom', 'BEMHTML', 'i-users'], function(provide, BEMDOM, BEMHTML, Users){
     provide(BEMDOM.decl(this.name, {}, {
             render : function(user, message){
-                console.log(message);
                 var date = new Date(Math.round(message.ts) * 1000);
                 var username = user ? (user.real_name || user.name) : 'Бот какой-то';
-                var text = this._parseSystemMessage(message.text);
+                var text = this._parseLink(message.text);
 
                 var _getSimpleDate = function(date){
                     var hours = ('0' + date.getHours()).slice(-2);
@@ -114,7 +113,13 @@ modules.define('message', ['i-bem__dom', 'BEMHTML', 'i-users'], function(provide
                 }
 
                 return message;
+            },
+            _parseLink : function(str){
+                return str.replace(/\<([^\}]+)\|([^\}]+)\>/g, function(m, url, link){
+                    return '<a target="_blank" class="link_text" href="'+url+'">'+link+'</a>';
+                });
             }
+
         }
     ));
 });
