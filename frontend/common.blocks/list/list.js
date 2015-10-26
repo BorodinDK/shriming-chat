@@ -97,14 +97,13 @@ modules.define(
 
             _getChannelsData : function(){
                 var _this = this;
-                var generalChannelIndex;
-                var hashChannelIndex;
-                var selectedChannel;
                 var items;
                 chatAPI.get('channels.list')
                     .then(function(data){
                         var channelsList = data.channels.map(function(channel, index){
-
+                            if(channel.is_general) {
+                                this.generalChannelIndex = index;
+                            }
                             return BEMHTML.apply({
                                 block : 'list',
                                 elem : 'item',
@@ -119,8 +118,6 @@ modules.define(
                         });
 
                         BEMDOM.update(_this._container, channelsList);
-
-                        items = _this._container.children();
                     })
                     .catch(function(){
                         Notify.error('Ошибка получения списка каналов!');
@@ -320,6 +317,7 @@ modules.define(
 
                 var node = this.__self.instances[n];
                 var items = node.findElem('item');
+                var find = false;
 
                 for(var i = 0; i<items.length; i++){
                     var item = this.elemParams([items[i]]);
@@ -329,7 +327,14 @@ modules.define(
                             list.delMod(list.elem('item'), 'current');
                         });
                         node.setMod($(items[i]), 'current', true);
+                        find = true;
+                        break;
                     }
+                }
+                if(!find){
+                    var generalItem = items[generalChannelIndex||0];
+                    this.emit('click-channels', this.elemParams([generalItem]));
+                    node.setMod($(generalItem), 'current', true);
                 }
 
             },
