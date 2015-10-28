@@ -1,8 +1,8 @@
 modules.define(
     'dialog',
     ['i-bem__dom', 'BEMHTML', 'socket-io', 'i-chat-api', 'i-users', 'user', 'list',
-        'message', 'keyboard__codes', 'jquery', 'notify', 'events__channels', 'functions__debounce'],
-    function(provide, BEMDOM, BEMHTML, io, chatAPI, Users, User, List, Message, keyCodes, $, Notify, channels, debounce){
+        'message', 'keyboard__codes', 'jquery', 'notify', 'notify-native', 'events__channels', 'functions__debounce'],
+    function(provide, BEMDOM, BEMHTML, io, chatAPI, Users, User, List, Message, keyCodes, $, Notify, Notification, channels, debounce){
         var EVENT_METHODS = {
             'click-channels' : 'channels',
             'click-users' : 'im'
@@ -68,6 +68,20 @@ modules.define(
                 var generatedMessage;
 
                 chatAPI.on('message', function(data){
+                    Notification.send(Users.getUser(data.user).real_name, data.text, function(){
+                        var lists = _this.findBlocksOutside('page')[0].findBlocksInside('list');
+                        for(i=0;i<lists.length;i++){
+                            var items = lists[i].findElem('item');
+                            for(j=0;j<items.length;j++){
+                                var itemData = lists[i].elemParams($(items[j]));
+                                if(data.channel == itemData.channelId){
+                                    if(lists[i].findBlocksInside($(items[j]), 'user')){
+                                        lists[i].findBlocksInside($(items[j]), 'user')[0].domElem.click();
+                                    } else items[j].click();
+                                }
+                            }
+                        }
+                    });
                     if(_this._channelId && data.channel === _this._channelId){
                         generatedMessage = _this._generateMessage(data);
                         BEMDOM.append(_this._container, generatedMessage);
