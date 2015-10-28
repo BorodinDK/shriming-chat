@@ -92,6 +92,15 @@ modules.define(
                 });
             },
 
+            _onTyping : function(){
+                var _this = this;
+                chatAPI.send({
+                    "id": 1,
+                    "type": "typing",
+                    "channel": _this._channelId
+                });
+            },
+
             _onUserClick : function(e, userParams){
                 var dialogControlBlock = this.findBlockInside('dialog-controls');
                 var callButton = dialogControlBlock.findElem('call');
@@ -218,6 +227,7 @@ modules.define(
             },
 
             _onConsoleKeyDown : function(e){
+                this._onTyping();
                 if(e.keyCode === keyCodes.ENTER && !e.ctrlKey){
                     e.preventDefault();
 

@@ -41,6 +41,10 @@ modules.define('i-chat-api', ['i-chat-api__web', 'jquery', 'vow', 'eventemitter2
              */
             post : webAPI.post,
 
+            send : function(data){
+                this._socket.send(JSON.stringify(data));
+            },
+
             /**
              * Аксессор к полю isOpen
              *
