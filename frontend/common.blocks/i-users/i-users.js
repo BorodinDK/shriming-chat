@@ -28,6 +28,10 @@ modules.define('i-users', ['i-chat-api', 'events__channels'],
                 var _this = this;
                 this._users = {};
 
+                chatAPI.get('auth.test').then(function(myInfo){
+                    _this.myId = myInfo.user_id;
+                });
+
                 return chatAPI.get('users.list').then(function(data){
                     if(data.members && data.members.length) {
                         data.members.forEach(function(member){

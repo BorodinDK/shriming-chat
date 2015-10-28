@@ -6,7 +6,9 @@ modules.define('notify-native', ['i-bem__dom'], function(provide, BEMDOM){
                 var options = {
                     body: text,
                 };
-                var notification = new Notification(title, options);
+                if(!document.hidden){
+                    var notification = new Notification(title, options);
+                }
                 notification.onclick = function(){
                     window.focus();
                     callback();
