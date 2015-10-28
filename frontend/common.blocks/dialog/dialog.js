@@ -44,6 +44,7 @@ modules.define(
                         User.on('click', this._onUserClick, this);
 
                         this._textarea.bindTo('keydown', this._onConsoleKeyDown.bind(this));
+                        this._textarea.bindTo('input', this._onTyping.bind(this));
                         this.bindTo('history', 'wheel DOMMouseScroll mousewheel', this._onHistoryScroll.bind(this));
                         this._subscribeMessageUpdate();
 
@@ -234,7 +235,6 @@ modules.define(
             },
 
             _onConsoleKeyDown : function(e){
-                this._onTyping();
                 if(e.keyCode === keyCodes.ENTER && !e.ctrlKey){
                     e.preventDefault();
 
