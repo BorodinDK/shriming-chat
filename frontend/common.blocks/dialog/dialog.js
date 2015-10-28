@@ -49,8 +49,12 @@ modules.define(
 
                         chatAPI.on('user_typing', function(data){
                             if(data.channel == _this._channelId){
-                                console.log('TYPING');
-                                _this.setMod(_this.elem('typing'), 'visible');
+                                if(_this.typingTimeout) clearTimeout(_this.typingTimeout);
+                                _this.setMod($(_this.elem('typing')), 'visible');
+                                _this.elem('typing')[0].innerText = Users.getUser(data.user).real_name+' typing...';
+                                _this.typingTimeout = setTimeout(function(){
+                                    _this.delMod($(_this.elem('typing')), 'visible');
+                                },5000);
                             }
                         });
 
