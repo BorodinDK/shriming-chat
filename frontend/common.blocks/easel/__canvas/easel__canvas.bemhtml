@@ -1,0 +1,7 @@
+block('easel')(
+    elem('canvas')(
+        js()(true),
+        tag()('canvas'),
+        mix()('i-bem')
+     )
+);

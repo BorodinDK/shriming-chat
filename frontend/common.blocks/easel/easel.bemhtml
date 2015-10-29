@@ -1,0 +1,58 @@
+block('easel')(
+    js()(true),
+    content()(function(){
+        //var params = this.ctx.params || {};
+        return applyCtx([
+            {
+                elem : 'palette',
+                content : [
+                    {
+                        elem : 'color',
+                        params : {color : '#000000'}
+                    },{
+                        elem : 'color',
+                        params : {color : '#898989'}
+                    },{
+                        elem : 'color',
+                        params : {color : '#585463'}
+                    },{
+                        elem : 'color',
+                        params : {color : '#544662'}
+                    },{
+                        elem : 'color',
+                        params : {color : '#6c4d84'}
+                    },{
+                        elem : 'color',
+                        params : {color : '#3968af'}
+                    },{
+                        elem : 'color',
+                        params : {color : '#1a9ad0'}
+                    },{
+                        elem : 'color',
+                        params : {color : '#71baa5'}
+                    },{
+                        elem : 'color',
+                        params : {color : '#99c660'}
+                    },{
+                        elem : 'color',
+                        params : {color : '#c3b46e'}
+                    },{
+                        elem : 'color',
+                        params : {color : '#f0af46'}
+                    },{
+                        elem : 'color',
+                        params : {color : '#dd5a40'}
+                    },{
+                        elem : 'color',
+                        params : {color : '#c33a5d'}
+                    },{
+                        elem : 'color',
+                        params : {color : '#b33179'}
+                    }
+                ]
+            },{
+                elem : 'canvas',
+            }
+        ]);
+    })
+);

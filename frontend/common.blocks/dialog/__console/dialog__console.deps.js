@@ -35,6 +35,9 @@
         },
         {
             block : 'textcomplete'
+        },
+        {
+            block : 'easel'
         }
     ],
     shouldDeps : []
