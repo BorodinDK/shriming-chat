@@ -62,6 +62,12 @@ block('dialog').elem('console')(
                             elem : 'emoji-button'
                         }
                     ]
+                },
+                {
+                    elem : 'button-draw'
+                },
+                {
+                    block : 'easel',
                 }
             ]
         });

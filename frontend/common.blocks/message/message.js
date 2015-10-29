@@ -1,10 +1,11 @@
 modules.define('message', ['i-bem__dom', 'BEMHTML', 'i-users'], function(provide, BEMDOM, BEMHTML, Users){
     provide(BEMDOM.decl(this.name, {}, {
             render : function(user, message){
-                console.log(message);
                 var date = new Date(Math.round(message.ts) * 1000);
                 var username = user ? (user.real_name || user.name) : 'Бот какой-то';
-                var text = this._parseSystemMessage(message.text);
+                var text = this._parseLink(message.text);
+                    text = this._parseUser(text);
+                    text = this._parseDraw(text);
 
                 var _getSimpleDate = function(date){
                     var hours = ('0' + date.getHours()).slice(-2);
@@ -114,6 +115,22 @@ modules.define('message', ['i-bem__dom', 'BEMHTML', 'i-users'], function(provide
                 }
 
                 return message;
+            },
+            _parseLink : function(str){
+                return str.replace(/<(?!@)(.+?)(\|.+?)?>/g, function(m, url, link){
+                    return '<a target="_blank" class="link_text" href="'+url+'">'+(link?link.substr(1):url)+'</a>';
+                });
+            },
+            _parseDraw : function(str){
+                return str.replace(/\[BASE64(.+?)\]/g, function(m, base64){
+                    return '<img src="data:image/jpeg;base64,'+base64+'" alt="">';
+                });
+            },
+            _parseUser : function(str){
+                return str.replace(/<@(.+?)(\|.+?)?>/g, function(m, userId, name){
+                    var user = Users.getUser(userId);
+                    return '<a class="link_text" title="'+user.real_name+'" href="#@'+user.name+'">@'+(name ? name.substr(1) : user.name)+'</a>';
+                });
             }
         }
     ));

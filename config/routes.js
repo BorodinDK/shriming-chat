@@ -61,6 +61,10 @@ module.exports.routes = {
     'get  /getToken' : 'Token.get',
     'post /getToken' : 'Token.get',
 
+    // getToken
+    'get  /base64toFile' : 'Base64toFile.get',
+    'post /base64toFile' : 'Base64toFile.get',
+
     // WebRtc
     'post /webrtc/message' : 'WebrtcController.message',
 

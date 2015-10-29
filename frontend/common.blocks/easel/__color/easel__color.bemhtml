@@ -1,0 +1,8 @@
+block('easel')(
+    elem('color')(
+        js()(function(){
+		return this.ctx.params;
+	}),
+        mix()('i-bem')
+     )
+);

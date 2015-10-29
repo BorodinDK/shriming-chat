@@ -1,8 +1,8 @@
 modules.define(
     'dialog',
     ['i-bem__dom', 'BEMHTML', 'socket-io', 'i-chat-api', 'i-users', 'user', 'list',
-        'message', 'keyboard__codes', 'jquery', 'notify', 'events__channels', 'functions__debounce'],
-    function(provide, BEMDOM, BEMHTML, io, chatAPI, Users, User, List, Message, keyCodes, $, Notify, channels, debounce){
+        'message', 'keyboard__codes', 'jquery', 'notify', 'notify-native', 'events__channels', 'functions__debounce', 'easel__canvas'],
+    function(provide, BEMDOM, BEMHTML, io, chatAPI, Users, User, List, Message, keyCodes, $, Notify, Notification, channels, debounce, Easel){
         var EVENT_METHODS = {
             'click-channels' : 'channels',
             'click-users' : 'im'
@@ -17,9 +17,16 @@ modules.define(
                         this._container = this.elem('container');
                         this._page = this.findBlockOutside('page');
                         this._dropZone = this._page.findBlocksInside('drop-zone')[0];
+                        this._easel = this._page.findBlocksInside('easel')[0];
+                        this._canvas = this._easel.findElem('canvas')[0];
+                        this._buttonDraw = this.elem('button-draw')[0];
 
                         var _this = this;
                         var timeout;
+
+                        this._buttonDraw.addEventListener('click', function(){
+                            _this._easel.toggleMod('visible', true);
+                        });
 
                         document.body.ondragover = function(e){
                             e.preventDefault();
@@ -44,13 +51,18 @@ modules.define(
                         User.on('click', this._onUserClick, this);
 
                         this._textarea.bindTo('keydown', this._onConsoleKeyDown.bind(this));
+                        this._textarea.bindTo('input', this._onTyping.bind(this));
                         this.bindTo('history', 'wheel DOMMouseScroll mousewheel', this._onHistoryScroll.bind(this));
                         this._subscribeMessageUpdate();
 
                         chatAPI.on('user_typing', function(data){
                             if(data.channel == _this._channelId){
-                                console.log('TYPING');
-                                _this.setMod(_this.elem('typing'), 'visible');
+                                if(_this.typingTimeout) clearTimeout(_this.typingTimeout);
+                                _this.setMod($(_this.elem('typing')), 'visible');
+                                _this.elem('typing')[0].innerText = Users.getUser(data.user).real_name+' typing...';
+                                _this.typingTimeout = setTimeout(function(){
+                                    _this.delMod($(_this.elem('typing')), 'visible');
+                                },5000);
                             }
                         });
 
@@ -68,6 +80,23 @@ modules.define(
                 var generatedMessage;
 
                 chatAPI.on('message', function(data){
+                    console.log('RTC.message', data);
+                    if(Users.myId!=data.user){
+                        Notification.send(Users.getUser(data.user).real_name, data.text, function(){
+                            var lists = _this.findBlocksOutside('page')[0].findBlocksInside('list');
+                            for(i=0;i<lists.length;i++){
+                                var items = lists[i].findElem('item');
+                                for(j=0;j<items.length;j++){
+                                    var itemData = lists[i].elemParams($(items[j]));
+                                    if(data.channel == itemData.channelId){
+                                        if(lists[i].findBlocksInside($(items[j]), 'user')){
+                                            lists[i].findBlocksInside($(items[j]), 'user')[0].domElem.click();
+                                        } else items[j].click();
+                                    }
+                                }
+                            }
+                        });
+                    }
                     if(_this._channelId && data.channel === _this._channelId){
                         generatedMessage = _this._generateMessage(data);
                         BEMDOM.append(_this._container, generatedMessage);
@@ -76,6 +105,18 @@ modules.define(
                         shrimingEvents.emit('channel-received-message', { channelId : data.channel });
                     }
                 });
+            },
+
+            _onTyping : function(){
+                var _this = this;
+                if(!this.lastTyping || this.lastTyping < Date.now()-4000){
+                    chatAPI.send({
+                        "id": 1,
+                        "type": "typing",
+                        "channel": _this._channelId
+                    });
+                    this.lastTyping = Date.now();
+                }
             },
 
             _onUserClick : function(e, userParams){
@@ -216,13 +257,17 @@ modules.define(
 
             _sendMessage : function(message){
                 var _this = this;
+                var base64 = false;
+                if(Easel.getImage()){
+                    base64 = '[BASE64'+Easel.file()+']';
+                }
 
                 if(!this._channelId) {
                     return;
                 }
 
                 chatAPI.post('chat.postMessage', {
-                    text : message,
+                    text : base64 ? message+base64 : message,
                     channel : _this._channelId,
                     username : _this.params.username,
                     as_user : true
@@ -244,7 +289,7 @@ modules.define(
                         filename : files[i].name,
                         type : files[i].type,
                         file : files[i],
-                        channels : _this._channelId,
+                        channels : _this._channelId
                     },function(e){
                         this._progress.style.height = e+'%';
                         this._dropZone.setMod('upload', true);

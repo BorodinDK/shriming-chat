@@ -2,6 +2,6 @@
 {
     mustDeps : [],
     shouldDeps : [
-        { mods : { theme : 'shriming' } }
+        { mods : { theme : 'shriming', text : true} }
     ]
 });
