@@ -1,0 +1,7 @@
+block('call-confirm').def()(function(){
+    //var data = this.ctx.data;
+    return applyCtx({
+        block : this.block,
+        js : true
+    });
+});
