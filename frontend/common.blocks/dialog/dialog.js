@@ -30,8 +30,11 @@ modules.define(
 
                         document.body.ondragover = function(e){
                             e.preventDefault();
-                            clearTimeout(timeout);
-                            _this._dropZone.setMod('visible', true);
+                            var dt = e.dataTransfer;
+                            if(dt.types != null && (dt.types.indexOf ? dt.types.indexOf('Files') != -1 : dt.types.contains('application/x-moz-file'))){
+                                clearTimeout(timeout);
+                                _this._dropZone.setMod('visible', true);
+                            }
                             return false;
                         };
                         document.body.addEventListener('dragleave',function(e){
@@ -43,7 +46,7 @@ modules.define(
                         }, false);
 
                         document.body.ondrop = function(e){
-                            _this._sendFiles(event.dataTransfer.files);
+                            _this._sendFiles(e.dataTransfer.files);
                             return false;
                         };
 
