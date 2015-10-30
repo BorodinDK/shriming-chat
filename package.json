@@ -92,6 +92,9 @@
     "jshint-stylish": "^2.0.1",
     "stylint": "^1.2.3"
   },
+  "engines": {
+    "node": "4.2.1"
+  },
   "scripts": {
     "specs": "enb make specs -d frontend",
     "test": "gulp lint",
